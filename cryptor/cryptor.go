@@ -2,7 +2,6 @@
 // vault and key cache.
 //
 // Copyright (c) 2013 CloudFlare, Inc.
-
 package cryptor
 
 import (
@@ -23,7 +22,7 @@ import (
 )
 
 const (
-	DEFAULT_VERSION = 1
+	DefaultVersion = 1
 )
 
 type Cryptor struct {
@@ -51,7 +50,7 @@ type AccessStructure struct {
 	Predicate string
 }
 
-// Implements msp.UserDatabase
+// UserDatabase implements msp.UserDatabase
 type UserDatabase struct {
 	names *[]string
 
@@ -367,7 +366,7 @@ func (encrypted *EncryptedData) wrapKey(records *passvault.Records, clearKey []b
 			return err
 		}
 
-		for name, _ := range shareSet {
+		for name := range shareSet {
 			encrypted.KeySetRSA[name], err = generateRandomKey(name)
 			if err != nil {
 				return err
@@ -377,7 +376,7 @@ func (encrypted *EncryptedData) wrapKey(records *passvault.Records, clearKey []b
 				return err
 			}
 
-			for i, _ := range shareSet[name] {
+			for i := range shareSet[name] {
 				tmp := make([]byte, 16)
 				crypt.Encrypt(tmp, shareSet[name][i])
 				shareSet[name][i] = tmp
@@ -397,8 +396,8 @@ func (encrypted *EncryptedData) wrapKey(records *passvault.Records, clearKey []b
 func (encrypted *EncryptedData) unwrapKey(cache *keycache.Cache, user string) (unwrappedKey []byte, names []string, err error) {
 	var (
 		decryptErr error
-		fullMatch  bool = false
-		nameSet         = map[string]bool{}
+		fullMatch  bool
+		nameSet    = map[string]bool{}
 	)
 
 	if len(encrypted.Predicate) == 0 {
@@ -477,7 +476,7 @@ func (encrypted *EncryptedData) unwrapKey(cache *keycache.Cache, user string) (u
 // implemented, the maximum value for min is 2.
 func (c *Cryptor) Encrypt(in []byte, labels []string, access AccessStructure) (resp []byte, err error) {
 	var encrypted EncryptedData
-	encrypted.Version = DEFAULT_VERSION
+	encrypted.Version = DefaultVersion
 	if encrypted.VaultId, err = c.records.GetVaultID(); err != nil {
 		return
 	}
@@ -530,7 +529,7 @@ func (c *Cryptor) Decrypt(in []byte, user string) (resp []byte, names []string, 
 	if err = json.Unmarshal(in, &encrypted); err != nil {
 		return
 	}
-	if encrypted.Version != DEFAULT_VERSION && encrypted.Version != -1 {
+	if encrypted.Version != DefaultVersion && encrypted.Version != -1 {
 		return nil, nil, secure, errors.New("Unknown version")
 	}
 
@@ -546,11 +545,11 @@ func (c *Cryptor) Decrypt(in []byte, user string) (resp []byte, names []string, 
 	}
 
 	// make sure file was encrypted with the active vault
-	vaultId, err := c.records.GetVaultID()
+	vaultID, err := c.records.GetVaultID()
 	if err != nil {
 		return
 	}
-	if encrypted.VaultId != vaultId {
+	if encrypted.VaultId != vaultID {
 		return nil, nil, secure, errors.New("Wrong vault")
 	}
 
@@ -590,7 +589,7 @@ func (c *Cryptor) GetOwners(in []byte) (names []string, predicate string, err er
 	if err = json.Unmarshal(in, &encrypted); err != nil {
 		return
 	}
-	if encrypted.Version != DEFAULT_VERSION && encrypted.Version != -1 {
+	if encrypted.Version != DefaultVersion && encrypted.Version != -1 {
 		err = errors.New("Unknown version")
 		return
 	}
@@ -605,7 +604,7 @@ func (c *Cryptor) GetOwners(in []byte) (names []string, predicate string, err er
 	}
 
 	// make sure file was encrypted with the active vault
-	vaultId, err := c.records.GetVaultID()
+	vaultID, err := c.records.GetVaultID()
 	if err != nil {
 		return
 	}
@@ -631,7 +630,7 @@ func (c *Cryptor) GetOwners(in []byte) (names []string, predicate string, err er
 		}
 	}
 
-	for name, _ := range encrypted.ShareSet { // names from the secret splitting method
+	for name := range encrypted.ShareSet { // names from the secret splitting method
 		if !addedNames[name] {
 			names = append(names, name)
 			addedNames[name] = true

@@ -30,7 +30,7 @@ func (e Row) AddM(f Row) {
 
 // MulM multiplies the row by a scalar.
 func (e Row) MulM(f FieldElem) {
-	for i, _ := range e {
+	for i := range e {
 		e[i] = e[i].Mul(f)
 	}
 }
@@ -92,7 +92,7 @@ func (e Matrix) Recovery() (Row, bool) {
 
 	// Duplicate e away so we don't mutate it; transpose it at the same time.
 	f := make([]Row, b)
-	for i, _ := range f {
+	for i := range f {
 		f[i] = NewRow(a)
 	}
 
@@ -102,27 +102,27 @@ func (e Matrix) Recovery() (Row, bool) {
 		}
 	}
 
-	for row, _ := range f {
+	for row := range f {
 		if row >= b { // The matrix is tall and thin--we've finished before exhausting all the rows.
 			break
 		}
 
 		// Find a row with a non-zero entry in the (row)th position
-		candId := -1
+		candID := -1
 		for j, f_j := range f[row:] {
 			if !f_j[row].IsZero() {
-				candId = j + row
+				candID = j + row
 				break
 			}
 		}
 
-		if candId == -1 { // If we can't find one, fail and return our partial work.
+		if candID == -1 { // If we can't find one, fail and return our partial work.
 			return aug, false
 		}
 
 		// Move it to the top
-		f[row], f[candId] = f[candId], f[row]
-		aug[row], aug[candId] = aug[candId], aug[row]
+		f[row], f[candID] = f[candID], f[row]
+		aug[row], aug[candID] = aug[candID], aug[row]
 
 		// Make the pivot 1.
 		fInv := f[row][row].Invert()
@@ -131,7 +131,7 @@ func (e Matrix) Recovery() (Row, bool) {
 		aug[row] = aug[row].Mul(fInv)
 
 		// Cancel out the (row)th position for every row above and below it.
-		for i, _ := range f {
+		for i := range f {
 			if i != row && !f[i][row].IsZero() {
 				c := f[i][row].Dup()
 

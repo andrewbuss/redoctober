@@ -2,7 +2,6 @@
 // for the Red October server.
 //
 // Copyright (c) 2013 CloudFlare, Inc.
-
 package keycache
 
 import (
@@ -132,7 +131,7 @@ func (cache *Cache) MatchUser(name, user string, labels []string) (ActiveUser, s
 // for decryption or symmetric encryption
 func (cache *Cache) useKey(name, user, slot string, labels []string) {
 	if val, slot, present := cache.MatchUser(name, user, labels); present {
-		val.Usage.Uses -= 1
+		val.Usage.Uses--
 		if val.Usage.Uses <= 0 {
 			delete(cache.UserKeys, DelegateIndex{name, slot})
 		} else {

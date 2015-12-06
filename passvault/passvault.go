@@ -3,7 +3,6 @@
 // stored hashed (with salt) using scrypt.
 //
 // Copyright (c) 2013 CloudFlare, Inc.
-
 package passvault
 
 import (
@@ -39,12 +38,12 @@ var DefaultRecordType = RSARecord
 
 // Constants for scrypt
 const (
-	KEYLENGTH = 16    // 16-byte output from scrypt
+	KeyLength = 16    // 16-byte output from scrypt
 	N         = 16384 // Cost parameter
 	R         = 8     // Block size
 	P         = 1     // Parallelization factor
 
-	DEFAULT_VERSION = 1
+	DefaultVersion = 1
 )
 
 type ECPublicKey struct {
@@ -88,7 +87,7 @@ type PasswordRecord struct {
 	Admin bool
 }
 
-// diskRecords is the structure used to read and write a JSON file
+// Records is the structure used to read and write a JSON file
 // containing the contents of a password vault
 type Records struct {
 	Version   int
@@ -116,7 +115,7 @@ func init() {
 // hashPassword takes a password and derives a scrypt salted and hashed
 // version
 func hashPassword(password string, salt []byte) ([]byte, error) {
-	return scrypt.Key([]byte(password), salt, N, R, P, KEYLENGTH)
+	return scrypt.Key([]byte(password), salt, N, R, P, KeyLength)
 }
 
 // encryptRSARecord takes an RSA private key and encrypts it with
@@ -225,7 +224,7 @@ func createPasswordRec(password string, admin bool, userType string) (newRec Pas
 // derivePasswordKey generates a key from a password (and salt) using
 // scrypt
 func derivePasswordKey(password string, keySalt []byte) ([]byte, error) {
-	return scrypt.Key([]byte(password), keySalt, N, R, P, KEYLENGTH)
+	return scrypt.Key([]byte(password), keySalt, N, R, P, KeyLength)
 }
 
 // decryptECB decrypts bytes using a key in AES ECB mode.
@@ -254,7 +253,7 @@ func encryptECB(data, key []byte) (encryptedData []byte, err error) {
 	return
 }
 
-// InitFromDisk reads the record from disk and initialize global context.
+// InitFrom reads the record from disk and initialize global context.
 func InitFrom(path string) (records Records, err error) {
 	var jsonDiskRecord []byte
 
@@ -325,7 +324,7 @@ func InitFrom(path string) (records Records, err error) {
 	// read from the file and so it needs to be initialized.
 
 	if records.Version == 0 {
-		records.Version = DEFAULT_VERSION
+		records.Version = DefaultVersion
 		records.VaultId = int(mrand.Int31())
 		records.HmacKey, err = symcrypt.MakeRandom(16)
 		if err != nil {
@@ -465,12 +464,12 @@ func (records *Records) GetRecord(name string) (PasswordRecord, bool) {
 	return dpr, found
 }
 
-// GetVaultId returns the id of the current vault.
+// GetVaultID returns the id of the current vault.
 func (records *Records) GetVaultID() (id int, err error) {
 	return records.VaultId, nil
 }
 
-// GetHmacKey returns the hmac key of the current vault.
+// GetHMACKey returns the hmac key of the current vault.
 func (records *Records) GetHMACKey() (key []byte, err error) {
 	return records.HmacKey, nil
 }

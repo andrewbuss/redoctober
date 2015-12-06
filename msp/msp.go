@@ -1,3 +1,4 @@
+// Package msp is an implementation of monotone span programs for secret sharing
 package msp
 
 import (

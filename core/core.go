@@ -1,7 +1,6 @@
 // Package core handles the main operations of the Red October server.
 //
 // Copyright (c) 2013 CloudFlare, Inc.
-
 package core
 
 import (
@@ -355,7 +354,7 @@ func Delegate(jsonIn []byte) ([]byte, error) {
 	return jsonStatusOk()
 }
 
-// Create User processes a create-user request.
+// CreateUser processes a create-user request.
 func CreateUser(jsonIn []byte) ([]byte, error) {
 	var s CreateUserRequest
 	var err error
@@ -600,9 +599,9 @@ func Modify(jsonIn []byte) ([]byte, error) {
 
 	if err != nil {
 		return jsonStatusError(err)
-	} else {
-		return jsonStatusOk()
 	}
+
+	return jsonStatusOk()
 }
 
 // Owners processes a owners request.
